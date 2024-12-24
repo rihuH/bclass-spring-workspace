@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!-- NULL은 꼭 !!!!!! 대문자로 쓸 것 -->
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL"/>
+	</settings>
+	
+	<typeAliases>
+		<typeAlias type="com.kh.hyper.member.model.vo.Member" alias="member"/>
+		<typeAlias type="com.kh.hyper.board.model.vo.Board" alias="board"/>
+	</typeAliases>
+	
+	<!-- 
+		environments, dataSource ==> DB연결정보
+		
+		=> DB등록정보는 서버가 실행됨과 동시에 이루어져야 하는 작업
+		서버켜지면 바로 읽히는 root-context.xml에 기술할 예정
+		
+		Spring Bean 등록....
+	
+	 -->
+	 
+	 <mappers>
+	 	<mapper resource="/mapper/member-mapper.xml"/>
+	 	<mapper resource="/mapper/board-mapper.xml"/>
+	 </mappers>
+	 
+	 <!-- 스프링 프레임워크 5가지 핵심 특징
+	 IOC/ DI/ AOP/ POJO/ PSA
+	 inversion of control
+	 defendency***의존성 injection
+	 
+	 스프링이 객체를 관리할 수 잇도록 등록하는 것을 '빈으로 등록한다ㅗ'고 표현
+	 자바가 커피에서 따온거니가 커피 만드려고 콩 준다는 뜻
+	 
+	  -->
+
+</configuration>

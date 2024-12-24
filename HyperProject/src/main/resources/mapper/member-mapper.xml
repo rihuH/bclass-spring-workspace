@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <!-- 1절 
+ <mapper namespace="memberMapper"> -->
+ 
+ <!-- 2절 Mapper애노태이션. 인터페이스의 풀클래스명으로 namespace작성-->
+ <mapper namespace="com.kh.hyper.member.model.dao.MemberMapper">
+ 
+ 	<!-- 로그인용 쿼리문 1절 -->
+ 	<select id="login" parameterType="member" resultType="member">
+ 		SELECT 
+ 			   USER_ID userId, 
+ 			   USER_PWD userPwd, 
+ 			   USER_NAME userName, 
+ 			   EMAIL, 
+ 			   GENDER, 
+ 			   AGE, 
+ 			   PHONE, 
+ 			   ADDRESS, 
+ 			   ENROLL_DATE enrollDate, 
+ 			   MODIFY_DATE modifyDate, 
+ 			   STATUS 
+ 		  FROM 
+ 		  	   MEMBER 
+ 		 WHERE 
+ 		 	   STATUS = 'Y' 
+ 		   AND 
+ 		   	   USER_ID = #{userId}
+ 		   <!-- 2절 
+ 		   AND
+ 		   	   USER_PWD = #{ userPwd }-->
+ 	</select>
+ 	
+ 	<!-- 회원가입용 쿼리문 -->
+ 	<insert id="join" parameterType="member">
+ 		INSERT 
+ 		  INTO 
+ 		  	   MEMBER
+ 		  	   (
+ 			   USER_ID, 
+ 			   USER_PWD, 
+ 			   USER_NAME, 
+ 			   EMAIL, 
+ 			   GENDER, 
+ 			   AGE, 
+ 			   PHONE, 
+ 			   ADDRESS
+ 			   )
+ 		VALUES
+ 			   (
+ 			   #{userId},
+ 			   #{userPwd},
+ 			   #{userName},
+ 			   #{email},
+ 			   #{gender},
+ 			   #{age},
+ 			   #{phone},
+ 			   #{address}
+ 			   )
+ 			    
+ 	</insert>
+ 	
+ 	<!-- 회원정보 수정용 쿼리문 -->
+ 	<update id="updateMember" parameterType="member">
+ 		UPDATE MEMBER
+ 		SET
+ 		USER_NAME=#{userName},
+ 		EMAIL=#{email},
+ 		GENDER=#{gender},
+ 		AGE=#{age},
+ 		PHONE=#{phone},
+ 		ADDRESS=#{address}
+ 		WHERE
+ 		USER_ID = #{userId}
+ 	</update>
+ 	
+ 	<!-- 회원 정보 탈퇴용 SQL문 -->
+ 	<update id="delete" parameterType="member">
+ 		UPDATE MEMBER SET STATUS='N' AND MODIFY_DATE =SYSDATE WHERE USER_ID=#{userId}
+ 	</update>
+ 	
+ 	<!-- 다중 트랜잭션 용 INSERT구문 -->
+ 	<insert id="test">
+ 		INSERT INTO TB_TEST VALUES(1, '1')
+ 	</insert>
+ 	
+ 	<!-- AJAX -->
+ 	<!-- 아이디 중복체크용 쿼리문 -->
+ 	<select id="checkId" resultType="_int">
+ 		SELECT 
+ 			   COUNT(*) 
+ 		  FROM 
+ 			   MEMBER 
+ 		 WHERE 
+ 			   USER_ID = #{userId} 
+ 		   AND 
+ 			   STATUS = 'Y'
+ 	</select>
+ 	<!-- 매퍼파일에서 전달한 파라미터랑 적은 변수명이 다른 경우, userId를 넘기고 여기는 #{abced} 라고 적은 경우
+ 			   동작은 잘 한다 왜냐하면 매개변수가 하나고 전달한 파라미터가 하나면, 얘는 변수명으로 판단하는 것이 아니고 하나가 들어왔는지 안 들어왔는지로 판단을 한다.
+ 			   사람들이 실수 많이 해서 그런것 오타나거나 -->
+ 	
+ 	
+ 	
+ 
+ 
+ 
+ 
+ </mapper>

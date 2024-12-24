@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<!-- 
+		* root-context.xml
+		서버 구동과 동시에 web.xml파일을 거쳐서 바로 로딩되는 문서 == preloading
+		=> 서버 구동과 동시에 바로세팅(Bean등록)해야하는 내용들을 작성
+		=> 주로 DB접속, 트랜잭션 처리, 외부 모듈연결 등등,,,
+	 -->
+	 <!-- destroy-method는 끝나고 자원반납을 위임하는 것. close메소드 호출해달라고 하는 것 -->
+	 <bean class="org.apache.commons.dbcp.BasicDataSource" id="dataSource" destroy-method="close">
+	 	<!-- 어떤 DB에 접속할건지 정보 작성 -->
+	 	<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+	 	<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"/>
+	 	<property name="username" value="SPRING"/>
+	 	<property name="password" value="SPRING"/>
+	 </bean>
+	 
+	 <!-- 
+	 	BasicDataSource dataSource = new BasicDataSource();
+	 	dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+	 	dataSource.setUrl("jdbc:oracle:thin:@localhost:1521:xe");
+	 	dataSource.setUsername("SPRING");
+	 	dataSource.setPassword("SPRING");
+	 
+	 	객체생성하고 set메소드 호출을 알아서 함
+	  -->
+	  
+	  <!-- 2단계. MyBatisSpring에서 제공하는 SQL명령을 실행하기 위한 Bean등록
+	   Bean : 스프링이 관리하는 객체
+	   관리 = 객체의 생명 주기를 관리
+	   bean등록 스프링보고 객체의 생명주기를 관리하라고 위임하는 것 -->
+	  <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+	  	<!-- MyBatis설정파일 위치를 지정해서 설정값들을 가져와야함
+	  		target-classes을 기준으로 시작해서 위치와 파일명을 적게됨. 현재 파일은 바로 있으므로 바로-->
+	  	<property name="configLocation" value="classpath:mybatis-config.xml"/>
+	  		
+	  	<property name="dataSource" ref="dataSource"/>
+	  </bean>
+	  
+	  <!-- 
+	  	  SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactory();
+	  	  sqlSessionFactory.setConfigLocation("classpath:mybatis-config.xml");
+	  	  sqlSessionFactory.setDataSource(dataSource);
+	   -->
+	   
+	   <!-- 3단계. SQL구문 실행을 위한 템플릿을 등록하는 도구 등록 -->
+	   <bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSession">
+	   		<!-- 매개변수 생성자 참조 설정.
+	   		이번엔 필드에 넣는게 아니고 생성자에 매개변수로 넣어줘야 하므로 property태그 말고 -->
+	   		<constructor-arg ref="sqlSessionFactory"/>
+	   </bean>
+	   
+	   <!-- 
+	   		SqlSessionTemplate sqlSession = new SqlSessionTemplate(sqlSessionFactory);
+	   		위와 같이 property로 한 것은 세터주입
+	   		아래와같이 생성자 매개변수로 대입한 것은 생성자주입이라고 한다
+	   		
+	   		property : setter injection
+	   		constructor-arg : constructor injection
+	   		
+	   		xml문서에서 bean등록하는 방법
+	   		1. bean태그 작성
+	   		2. class속성에 풀 클래스명을 적는다
+	   		3. id속성에 id값을 적는다
+	    -->
+	   
+	   
+	   <!-- controller 빈 등록하면서 이번에는 핸들러 매핑까지 가능하도록 해야함
+	   	Controller와 handlerMapping을 위해 bean등록을 하고 매핑도 등록을 하고..
+	   	
+	   	
+	   	<bean class="com.kh.hyper.member.controller.MemberController" id="memberController">
+	   	</bean>
+	   	
+	   	<bean class="org.springframework.web.servlet.SimpleUrlhanderMapping">
+	   		<bean: property name="mapping">
+	   			<bean:prop key="login.me">memberController</bean>
+	   		</bean:property>
+	   	</bean>....
+	   	
+	   	너무 복잡
+	   	
+		그래서 쉬운 방법이 나옴
+		=>Controller에서 함   	
+	    -->
+	    
+	    
+	    <!-- Mapper인터페이스 스캔 -->
+	    <!-- 밑에 NameSpaces창에서 마이바티스를 선택하고 '저장'하고 소스로 넘어온다 
+	    마이바티스스프링 :scan 태그를 쓸 수 있다. @mapper태그는 스프링에서 제공하는게 아니고 마이바티스에서 제공하는 거라서
+	    따로 빈 등록을 해주어야 한다
+	    멤버매퍼가 있는 패키지경로를 base-package에 적어준다. 여러 개 적어야하면 , 찍고 여러 경로를 적어준다-->
+	    <mybatis-spring:scan base-package="com.kh.hyper.member.model.dao"/>
+	    <mybatis-spring:scan base-package="com.kh.hyper.board.model.dao"/>
+
+
+
+	    
+	    <!-- 데이타소스를 관리하는 빈 등록.
+	    개발자가 생각하는 트랜잭션의 범위를 설정할 수 있다.
+	    DataSourceTransactionManager
+	    spring-jdbc에 ...datasource에 존재는 클래스
+	    또 spring-tx가 가진 태그도 추가로 사용함.
+	    이 루트컨텍스트 파일의 namespace칸에서 tx를 체크함 -->
+	    <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="transactionManager">
+	    	<property name="dataSource" ref="dataSource"/>
+	    </bean>
+	    <!-- tx 체크 후에 태그. 위에 등록한 트랜잭션 매니저를 사용하도록 등록한다. -->
+	    <tx:annotation-driven transaction-manager="transactionManager"/>
+	    <!-- 멤버서비스로 -->
+	   
+	   
+	   <!-- 파일업로드 관련 빈 등록
+	   빈 id 없으면 빈 못 만듦. 그리고 id끼리 충돌, 중복되어도 오류 -->
+	   <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+	   		<property name="maxUploadSize" value="100000000"/>
+	   		<property name="maxInMemorySize" value="100000000"/>
+	   </bean>
+	   
+	
+		  
+		  
+	  
+		
+</beans>

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+	
+	
+	
+	<!-- 
+		* pom.xml의 구조
+		
+		<project>
+			프로젝트의 정보
+			<properties>  이 문서에서 사용할 수 있는 속성
+			[<repositories (지금은 없음)>] 
+			<dependencies> 라이브러리에 대한 정보
+			<build> 
+		</project>
+	 -->
+	 
+	 
+	 
+	 
+	 <!-- 
+	 	프로젝트에 대한 정보
+	 	groupId : 1,2번째 도메인 정보가 들어감. 2번째 레벨까지의 패키지구조.
+	 	artifactId : 탑레벨 도메인(즉, contextRoot명)
+	 	packaging : 배포시 압축방식 정한 것. war(jar는 그냥 프로그램, web war)
+	  -->
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.kh</groupId>
+	<artifactId>hyper</artifactId>
+	<name>HyperProject</name>
+	<packaging>war</packaging>
+	<version>1.0.0-BUILD-SNAPSHOT</version>
+	
+	
+	
+	
+	<!-- 
+		- properties(속성) : 문서내에서 사용할 환경설정 내용들을 담는 속성
+							(태그명 == 변수명, 변수같은 역할)
+		double java-version = 1.6; 같은 느낌.
+		<>에 있는 값을 바꾸면 얘가 다운받아서 바꿔줌.
+		예를 들어서 <java-version>이 본래 1.6으로 되어 있었는데 지금 우리가 쓰는 11로 바꿔주면 다운받아서 바꿔줌
+		<org.springframework-version>도 다른 것으로 되어 있었는데, 우리가 쓰기로 한 5.3.39로 바꿔주면 다운받아서 바꿔줌
+		바뀌는 것은 Maven Dependencies에서 확인할 수 있다.
+		${태그명}으로 해당 값을 불러올 수 있음
+		
+		>> Navigator의 Project파일을 살피면, settings와 target은 우리가 만질 일이 없다. 알아서 함.
+		test는 test코드작성하는 곳인데 아직 안 배워서 상관없다.
+		src만 건들게 된다.
+		
+		java는 자바클래스 만드는 곳. 자바소스코드 적는 곳.
+		resources 프로그램 돌리는 데에 필요하지만 소스코드는 아닌 것
+		webapp 배포. 안에 폴더들이 만들어져있따. lib는 사라졌다. 얘가 직접 관리하기 떄문. 그런데 내가 직접 넣고 싶은 lib 가 있다면 폴더를 만들어주면 된다.
+		예를 들어 jstl은 dependencies라는 태그에 있지만 이걸 인식을 잘 못하기 때문에 직접 넣어주는 것이 좋다. 
+		web.xml(배포서술자)도 있음
+	 -->
+	<properties>
+		<java-version>11</java-version>
+		<org.springframework-version>5.3.39</org.springframework-version>
+		<org.aspectj-version>1.6.10</org.aspectj-version>
+		<org.slf4j-version>1.6.6</org.slf4j-version>
+	</properties>
+	
+	
+	
+	<!--  
+		- repositories : 기본 저장소에서 다운받지 못하는 경우 직접 다운하고자 하는 사설 저장소를 등록할 수 있다.
+		url에 홈페이지 태그란 밑에 적힌 url을 복사해서 넣어준다.
+	 -->
+	 <repositories>
+	 	<repository>
+	 		<id>Datanucleus</id>
+	 		<url>https://www.datanucleus.org/downloads/maven2/</url>
+	 	</repository>
+	 </repositories>
+	 
+	 
+	 <!-- 
+	 	- dependencies : 프로젝트에서 사용할 라이브러리의 정보를 기술하는 영역
+	 				(= 내가 다운로드 받고 싶은 라이브러리)
+	 	위에서 선언한 태그들을 \${ 로 변수 쓰듯이 사용할 수 있다.
+	  -->
+	<dependencies>
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework-version}</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				 </exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+				
+		<!-- AspectJ -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${org.aspectj-version}</version>
+		</dependency>	
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- @Inject -->
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+		</dependency>
+				
+		<!-- Servlet -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+			<version>2.3.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+	
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.7</version>
+			<scope>test</scope>
+		</dependency>     
+		
+		
+		<!--  필요한 라이브러리들을 세팅!  -->
+		<!--  1. DB관련 작업 라이브러리(오라클, 마이바티스) -->
+		
+		<!-- https://mvnrepository.com/artifact/oracle/ojdbc6 -->
+		<dependency>
+		    <groupId>oracle</groupId>
+		    <artifactId>ojdbc6</artifactId>
+		    <version>11.2.0.3</version>
+		</dependency>
+		
+		<!--  1_2. Spring에서 JDBC기능을 이용하기 위해 필요한 라이브러리 -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-jdbc</artifactId>
+	    <version>${org.springframework-version}</version>
+	</dependency>
+		
+		<!-- 1_3. 순수 ByBatis-->
+		<dependency>
+		  <groupId>org.mybatis</groupId>
+		  <artifactId>mybatis</artifactId>
+		  <version>3.5.16</version>
+		</dependency>
+
+<!--  1_4. Spring에서 MyBatis를 이용하기 위핸 라이브러리 -->
+<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+	<dependency>
+	    <groupId>org.mybatis</groupId>
+	    <artifactId>mybatis-spring</artifactId>
+	    <version>1.3.2</version>
+	</dependency>
+
+<!--  1.5. Connection Pool을 이용하기 위한 라이브러리 -->
+	<!-- https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp -->
+	<dependency>
+	    <groupId>commons-dbcp</groupId>
+	    <artifactId>commons-dbcp</artifactId>
+	    <version>1.4</version>
+	</dependency>
+
+	
+	<!-- 2. Lombok Library 자바개발자 100명 중 99명이 쓰는 라이브러리
+		boilerplate code : 무조건 써야되는데 반복되는 코드들. getter/setter, 생성자 등
+		이런걸 애노테이션을 이용해 자동생성 해줌
+		롬복은 뭘 써도 크게 상관 없음.
+		이왕이면 인기 많은거 쓰는게 안정성이 높다는 뜻.
+		눌러서 디펜던시 복사해서 붙여넣기
+	 -->
+	 <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+	<dependency>
+	    <groupId>org.projectlombok</groupId>
+	    <artifactId>lombok</artifactId>
+	    <version>1.18.24</version>
+	    <scope>provided</scope>
+	</dependency>
+	<!--롬복 설치하고 추가 세팅
+dependency 태그 추가후에 모든 sts를 종료하고ㅡ,
+C:\bclass99\dev\apache-maven-3.9.9\repository\org\projectlombok\lombok\1.18.24
+1.18.24 눌러서 Specify location 눌러서 sts.exe (워크스페이스에 sts.bundel에 있음) 눌러서 인스톨해줌
+창이 안 뜨면 cmd창에 위 풀 주소 쳐서 들어가기
+세팅 후 sts 다시 실행해서 작업하면 됨
+
+다 설치하면 Member vo로 다시 이동
+	 -->
+	 
+	 
+	 <!-- 3. Spring Security Modules -->
+	 <!-- 
+	 	123 모두 다운받아야하는데, 우리 자바버전이랑 호환성 맞는 것이 5.5.2
+	 	core는 필수이고
+	 
+	 	BCryptPasswordEncoder를 쓸거라서 이걸 또 빈으로 등록할거
+	 	
+	  -->
+	  <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
+	<dependency>
+	    <groupId>org.springframework.security</groupId>
+	    <artifactId>spring-security-core</artifactId>
+	    <version>5.5.2</version>
+	</dependency>
+	  <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-web -->
+	<dependency>
+	    <groupId>org.springframework.security</groupId>
+	    <artifactId>spring-security-web</artifactId>
+	    <version>5.5.2</version>
+	</dependency>
+	  <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-config -->
+	<dependency>
+	    <groupId>org.springframework.security</groupId>
+	    <artifactId>spring-security-config</artifactId>
+	    <version>5.5.2</version>
+	</dependency>
+	<!-- 	 	
+		BCryptPasswordEncoder는 우리가 만든 클래스가 아니라서 애노태이션 방식으로 빈 등록할 수 없다.(클래스 내용을 바꿀 수 없으니까)
+		root-context에는 좀 공개된 파일
+		이건 암호화된 파일이므로 web-inf에 spring폴더에다가 빈등록할 파일을 만들것
+		빈 등록하는 파일은 콩 달린 xml파일인 Spring Bean Configuration File을 만들어야함
+				
+	 -->
+	 
+	 
+	 <!-- 4. 파일 업로드를 위한 라이브러리 (cos 말고) -->
+	 <!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+	<dependency>
+	    <groupId>commons-fileupload</groupId>
+	    <artifactId>commons-fileupload</artifactId>
+	    <version>1.3.3</version>
+	</dependency>
+		 <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+	<dependency>
+	    <groupId>commons-io</groupId>
+	    <artifactId>commons-io</artifactId>
+	    <version>2.6</version>
+	</dependency>
+	 
+	 
+	 <!-- ajax쓰기 위한 라이브러리. new Gson 이렇게 해서 보내지 않아도 자동으로 변환해줌.
+	 자동으로 json형태로 변환해서 보내줌 -->
+	 <dependency>
+	    <groupId>com.google.code.gson</groupId>
+	    <artifactId>gson</artifactId>
+	    <version>2.8.5</version>
+     </dependency>
+	  
+	 
+	
+	
+
+
+
+
+
+	
+	</dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <additionalProjectnatures>
+                        <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+                    </additionalProjectnatures>
+                    <additionalBuildcommands>
+                        <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
+                    </additionalBuildcommands>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <compilerArgument>-Xlint:all</compilerArgument>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <mainClass>org.test.int1.Main</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
